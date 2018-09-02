@@ -7,7 +7,7 @@ const FBeamer = require('./fbeamer');
 // Vanilla
 const matcher = require('./matcher');
 const weather = require('./weather');
-const { currentWeather, forecastWeather } = require('./parser');
+const { currentWeather, currentTemperature, forecastWeather } = require('./parser');
 
 const server = express();
 const PORT = process.env.PORT || 3000;
@@ -32,11 +32,25 @@ server.post('/', (req, res, next) => {
                             await f.txt(data.sender, 'Looking out the window...');
                             weather(resp.entities.city, 'current')
                                 .then(response => {
+                                    console.log(response);
                                     let parseResult = currentWeather(resp.entities.city, response);
                                     f.txt(data.sender, parseResult);
                                 })
                                 .catch(error => {
                                     f.txt(data.sender, `Sorry, I can't get the weather for ${location.toUpperCase()}.`);
+                                });
+                            break;
+                        case 'CurrentTemperature':
+                            console.log(`Looking out for ${resp.entities.city}...`);
+                            // get weather resp from an API
+                            weather(resp.entities.city, 'current')
+                                .then(response => {
+                                    console.log(response);
+                                    let parseResult = currentTemperature(resp.entities.city, response);
+                                    f.txt(data.sender, parseResult);
+                                })
+                                .catch(error => {
+                                    f.txt(data.sender, `Sorry, I can't get the weather for `);
                                 });
                             break;
                         case 'WeatherForecast':

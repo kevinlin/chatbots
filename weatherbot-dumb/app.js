@@ -1,44 +1,44 @@
 'use strict';
 const Readline = require('readline');
 const rl = Readline.createInterface({
-	input: process.stdin,
-	output: process.stdout,
-	terminal: false
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false
 });
-const matchPattern = require('./matcher');
+const matcher = require('./matcher');
 const weather = require('./weather');
 const { currentWeather, currentTemperature, forecastWeather } = require('./parser');
 
 rl.setPrompt('> ');
 rl.prompt();
 rl.on('line', reply => {
-    matchPattern(reply, data => {
-		switch(data.intent) {
-			case 'Hello':
-				console.log(`${data.entities.greeting} to you too!`);
-				rl.prompt();
-				break;
-			case 'Exit':
-				console.log("Have a great day!");
-				process.exit(0);
-				break;
-			case 'CurrentWeather':
+    matcher(reply, data => {
+        switch (data.intent) {
+            case 'Hello':
+                console.log(`${data.entities.greeting} to you too!`);
+                rl.prompt();
+                break;
+            case 'Exit':
+                console.log("Have a great day!");
+                process.exit(0);
+                break;
+            case 'CurrentWeather':
                 data.entities.city = data.entities.city.trim().replace(/\?+$/, '');
                 console.log(`Looking out for ${data.entities.city}...`);
-				// get weather data from an API
-				weather(data.entities.city, 'current')
-					.then(response => {
+                // get weather data from an API
+                weather(data.entities.city, 'current')
+                    .then(response => {
                         console.log(response);
-						let parseResult = currentWeather(data.entities.city, response);
-						console.log(parseResult);
-						rl.prompt();
-					})
-					.catch(error => {
-						console.log(`Sorry, I can't get the weather for ${location.toUpperCase().red.bold}.`);
-						// console.log("There seems to be a problem connecting to the Weather service!");
-						rl.prompt();
-					});
-				break;
+                        let parseResult = currentWeather(data.entities.city, response);
+                        console.log(parseResult);
+                        rl.prompt();
+                    })
+                    .catch(error => {
+                        console.log(`Sorry, I can't get the weather for ${location.toUpperCase().red.bold}.`);
+                        // console.log("There seems to be a problem connecting to the Weather service!");
+                        rl.prompt();
+                    });
+                break;
             case 'CurrentTemperature':
                 data.entities.city = data.entities.city.trim().replace(/\?+$/, '');
                 console.log(`Looking out for ${data.entities.city}...`);
@@ -56,24 +56,24 @@ rl.on('line', reply => {
                         rl.prompt();
                     });
                 break;
-			case 'WeatherForecast':
-				console.log("Looking into my crystal ball...");
-				// get weather data from an API
-				weather(data.entities.city, 'forecast', data.entities.time)
-					.then(response => {
-						let parseResult = forecastWeather(response.daily.data[0], data.entities);
-						console.log(parseResult);
-						rl.prompt();
-					})
-					.catch(error => {
-						console.log("There seems to be a problem connecting to the Weather service!");
-						rl.prompt();
-					});
-				break;
-			default: {
-				console.log("I don't know what you mean :(");
-				rl.prompt();
-			}
-		}
-	});
+            case 'WeatherForecast':
+                console.log("Looking into my crystal ball...");
+                // get weather data from an API
+                weather(data.entities.city, 'forecast', data.entities.time)
+                    .then(response => {
+                        let parseResult = forecastWeather(response.daily.data[0], data.entities);
+                        console.log(parseResult);
+                        rl.prompt();
+                    })
+                    .catch(error => {
+                        console.log("There seems to be a problem connecting to the Weather service!");
+                        rl.prompt();
+                    });
+                break;
+            default: {
+                console.log("I don't know what you mean :(");
+                rl.prompt();
+            }
+        }
+    });
 });
