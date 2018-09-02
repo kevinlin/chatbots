@@ -5,14 +5,14 @@ const rl = Readline.createInterface({
 	output: process.stdout,
 	terminal: false
 });
-const matcher = require('./matcher');
+const matchPattern = require('./matcher');
 const weather = require('./weather');
-const {currentWeather, forecastWeather} = require('./parser');
+const { currentWeather, currentTemperature, forecastWeather } = require('./parser');
 
 rl.setPrompt('> ');
 rl.prompt();
 rl.on('line', reply => {
-	matcher(reply, data => {
+    matchPattern(reply, data => {
 		switch(data.intent) {
 			case 'Hello':
 				console.log(`${data.entities.greeting} to you too!`);
@@ -23,10 +23,12 @@ rl.on('line', reply => {
 				process.exit(0);
 				break;
 			case 'CurrentWeather':
-				console.log("Looking out my window...");
+                data.entities.city = data.entities.city.trim().replace(/\?+$/, '');
+                console.log(`Looking out for ${data.entities.city}...`);
 				// get weather data from an API
 				weather(data.entities.city, 'current')
 					.then(response => {
+                        console.log(response);
 						let parseResult = currentWeather(data.entities.city, response);
 						console.log(parseResult);
 						rl.prompt();
@@ -37,6 +39,23 @@ rl.on('line', reply => {
 						rl.prompt();
 					});
 				break;
+            case 'CurrentTemperature':
+                data.entities.city = data.entities.city.trim().replace(/\?+$/, '');
+                console.log(`Looking out for ${data.entities.city}...`);
+                // get weather data from an API
+                weather(data.entities.city, 'current')
+                    .then(response => {
+                        console.log(response);
+                        let parseResult = currentTemperature(data.entities.city, response);
+                        console.log(parseResult);
+                        rl.prompt();
+                    })
+                    .catch(error => {
+                        console.log(`Sorry, I can't get the weather for ${location.toUpperCase().red.bold}.`);
+                        // console.log("There seems to be a problem connecting to the Weather service!");
+                        rl.prompt();
+                    });
+                break;
 			case 'WeatherForecast':
 				console.log("Looking into my crystal ball...");
 				// get weather data from an API
