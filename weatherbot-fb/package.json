@@ -14,7 +14,7 @@
   "dependencies": {
     "body-parser": "1.18.2",
     "express": "4.16.3",
-    "request": "2.83.0",
+    "request": "2.88.2",
     "simplesky": "1.1.1",
     "xregexp": "3.1.1"
   }
