@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "1.18.2",
-    "express": "4.16.3",
+    "express": "4.21.1",
     "request": "2.83.0",
     "simplesky": "1.1.1",
     "xregexp": "3.1.1"
